@@ -1,14 +1,11 @@
 ---
 title: Templates
-description: "Manage WhatsApp message templates"
+description: Manage WhatsApp message templates
 ---
 
-<Frame>
-  <img
-    src="/images/11-templates.png"
-    alt="Templates"
-  />
-</Frame>
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+![Templates](/whatomate/images/11-templates.png)
 
 ## Overview
 
@@ -30,12 +27,7 @@ Click the **Sync from Meta** button to fetch the latest templates from your What
 
 ### Template Editor
 
-<Frame>
-  <img
-    src="/images/12-template-editor.png"
-    alt="Template Editor"
-  />
-</Frame>
+![Template Editor](/whatomate/images/12-template-editor.png)
 
 View and manage template details:
 - **Header** - Optional header with text, image, video, or document
@@ -57,17 +49,17 @@ When sending, you provide the values:
 
 ## Template Categories
 
-<CardGroup cols={3}>
-  <Card title="Marketing" icon="bullhorn">
+<CardGrid>
+  <Card title="Marketing" icon="megaphone">
     Promotional content, offers, and announcements
   </Card>
-  <Card title="Utility" icon="wrench">
+  <Card title="Utility" icon="setting">
     Order updates, confirmations, and notifications
   </Card>
-  <Card title="Authentication" icon="lock">
+  <Card title="Authentication" icon="approve-check">
     One-time passwords and verification codes
   </Card>
-</CardGroup>
+</CardGrid>
 
 ## Template Status
 
@@ -78,9 +70,9 @@ When sending, you provide the values:
 | **Rejected** | Template was rejected by Meta |
 | **Disabled** | Template has been disabled |
 
-<Note>
+<Aside type="note">
   Templates must be approved by Meta before they can be used for sending messages. The approval process typically takes a few minutes to 24 hours.
-</Note>
+</Aside>
 
 ## Using Templates
 

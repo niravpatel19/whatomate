@@ -1,7 +1,9 @@
 ---
 title: Authentication
-description: "User registration, login, and token management"
+description: User registration, login, and token management
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -11,9 +13,9 @@ Whatomate uses JWT (JSON Web Tokens) for authentication. After logging in, you r
 
 Create a new user account.
 
-<Note>
+<Aside type="note">
   Registration may be disabled in production environments. Contact your administrator for access.
-</Note>
+</Aside>
 
 ```bash
 POST /api/auth/register
@@ -128,6 +130,6 @@ curl -X GET "http://your-server:8080/api/contacts" \
 | Access Token | 1 hour |
 | Refresh Token | 7 days |
 
-<Warning>
+<Aside type="caution">
   Store tokens securely. Never expose tokens in client-side code or version control.
-</Warning>
+</Aside>

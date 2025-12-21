@@ -1,7 +1,9 @@
 ---
 title: WhatsApp Flows
-description: "Manage WhatsApp Flows for interactive experiences"
+description: Manage WhatsApp Flows for interactive experiences
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -175,9 +177,9 @@ Delete a flow.
 DELETE /api/flows/{id}
 ```
 
-<Warning>
+<Aside type="caution">
   Published flows cannot be deleted. Deprecate them first.
-</Warning>
+</Aside>
 
 ## Save to Meta
 
@@ -270,18 +272,12 @@ POST /api/flows/sync
 
 ## Flow Status Lifecycle
 
-```mermaid
-graph LR
-    A[DRAFT] --> B[PUBLISHED]
-    B --> C[DEPRECATED]
-```
-
 | Status | Description |
 |--------|-------------|
 | `DRAFT` | Flow is being designed, not yet available |
 | `PUBLISHED` | Flow is live and can be sent to users |
 | `DEPRECATED` | Flow has been retired |
 
-<Note>
+<Aside type="note">
   Flows must pass Meta's validation before they can be published. Use the Save to Meta endpoint to check for validation errors.
-</Note>
+</Aside>

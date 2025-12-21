@@ -1,7 +1,9 @@
 ---
 title: Templates
-description: "Manage WhatsApp message templates"
+description: Manage WhatsApp message templates
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -234,6 +236,6 @@ Use `{{1}}`, `{{2}}`, etc. for dynamic content:
 Hello {{1}}, your order #{{2}} is ready for pickup at {{3}}.
 ```
 
-<Warning>
+<Aside type="caution">
   Template approval can take from a few minutes to 24 hours. Rejected templates must be modified and resubmitted.
-</Warning>
+</Aside>

@@ -1,7 +1,9 @@
 ---
 title: Campaigns
-description: "Send bulk messages to multiple contacts"
+description: Send bulk messages to multiple contacts
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -134,9 +136,9 @@ Update a draft campaign.
 PUT /api/campaigns/{id}
 ```
 
-<Note>
+<Aside type="note">
   Only draft campaigns can be updated. Started or completed campaigns cannot be modified.
-</Note>
+</Aside>
 
 ## Delete Campaign
 
@@ -273,6 +275,6 @@ Campaigns automatically respect WhatsApp's rate limits:
 | TIER_100K | ~80 msg/sec |
 | TIER_UNLIMITED | No limit |
 
-<Tip>
+<Aside type="tip">
   Start with smaller campaigns to warm up your account and improve your messaging tier.
-</Tip>
+</Aside>

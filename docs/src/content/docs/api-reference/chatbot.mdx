@@ -1,7 +1,9 @@
 ---
 title: Chatbot
-description: "Configure chatbot automation and AI responses"
+description: Configure chatbot automation and AI responses
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -208,25 +210,6 @@ DELETE /api/chatbot/ai-contexts/{id}
 GET /api/chatbot/flows
 ```
 
-### Response
-
-```json
-{
-  "status": "success",
-  "data": {
-    "items": [
-      {
-        "id": "uuid",
-        "name": "Order Status",
-        "trigger_keywords": ["order", "status"],
-        "steps": [...],
-        "enabled": true
-      }
-    ]
-  }
-}
-```
-
 ### Create Flow
 
 ```bash
@@ -270,18 +253,6 @@ POST /api/chatbot/flows
     }
   ]
 }
-```
-
-### Update Flow
-
-```bash
-PUT /api/chatbot/flows/{id}
-```
-
-### Delete Flow
-
-```bash
-DELETE /api/chatbot/flows/{id}
 ```
 
 ## Agent Transfers
@@ -356,6 +327,6 @@ GET /api/chatbot/sessions/{id}
 }
 ```
 
-<Tip>
+<Aside type="tip">
   Use the Sessions API to debug chatbot interactions and understand the conversation state.
-</Tip>
+</Aside>

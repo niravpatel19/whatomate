@@ -1,14 +1,11 @@
 ---
 title: Campaigns
-description: "Send bulk messages to multiple contacts"
+description: Send bulk messages to multiple contacts
 ---
 
-<Frame>
-  <img
-    src="/images/13-campaigns.png"
-    alt="Campaigns"
-  />
-</Frame>
+import { Card, CardGrid, Steps, Aside } from '@astrojs/starlight/components';
+
+![Campaigns](/whatomate/images/13-campaigns.png)
 
 ## Overview
 
@@ -17,31 +14,32 @@ Campaigns allow you to send bulk WhatsApp messages to multiple contacts at once.
 ## Creating a Campaign
 
 <Steps>
-  <Step title="Select Template">
-    Choose an approved message template for your campaign.
-  </Step>
-  <Step title="Define Audience">
-    Select contacts or upload a contact list for targeting.
-  </Step>
-  <Step title="Set Variables">
-    Configure template variables for personalization.
-  </Step>
-  <Step title="Schedule (Optional)">
-    Schedule the campaign for a specific date and time.
-  </Step>
-  <Step title="Review & Send">
-    Review the campaign details and send or schedule it.
-  </Step>
+
+1. **Select Template**
+
+   Choose an approved message template for your campaign.
+
+2. **Define Audience**
+
+   Select contacts or upload a contact list for targeting.
+
+3. **Set Variables**
+
+   Configure template variables for personalization.
+
+4. **Schedule (Optional)**
+
+   Schedule the campaign for a specific date and time.
+
+5. **Review & Send**
+
+   Review the campaign details and send or schedule it.
+
 </Steps>
 
 ## Campaign Details
 
-<Frame>
-  <img
-    src="/images/14-campaign-details.png"
-    alt="Campaign Details"
-  />
-</Frame>
+![Campaign Details](/whatomate/images/14-campaign-details.png)
 
 Track your campaign performance with detailed analytics:
 
@@ -66,30 +64,30 @@ Each recipient's message status is tracked individually:
 
 ## Campaign Features
 
-<CardGroup cols={2}>
-  <Card title="Personalization" icon="user">
+<CardGrid>
+  <Card title="Personalization" icon="pencil">
     Use template variables to personalize each message with recipient data.
   </Card>
-  <Card title="Scheduling" icon="clock">
+  <Card title="Scheduling" icon="seti:clock">
     Schedule campaigns for optimal delivery times.
   </Card>
-  <Card title="Rate Limiting" icon="gauge">
+  <Card title="Rate Limiting" icon="setting">
     Automatic rate limiting to comply with WhatsApp policies.
   </Card>
-  <Card title="Analytics" icon="chart-line">
+  <Card title="Analytics" icon="graph">
     Real-time tracking of delivery and engagement metrics.
   </Card>
-</CardGroup>
+</CardGrid>
 
 ## Best Practices
 
-<Tip>
+<Aside type="tip">
   **Timing Matters**: Send campaigns during business hours in your recipients' timezone for better engagement.
-</Tip>
+</Aside>
 
-<Warning>
+<Aside type="caution">
   **Compliance**: Only send messages to contacts who have opted in to receive communications. Violating WhatsApp's policies can result in account restrictions.
-</Warning>
+</Aside>
 
 ### Tips for Successful Campaigns
 

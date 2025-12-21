@@ -1,14 +1,11 @@
 ---
 title: Dashboard
-description: "Monitor your WhatsApp business at a glance"
+description: Monitor your WhatsApp business at a glance
 ---
 
-<Frame>
-  <img
-    src="/images/01-dashboard.png"
-    alt="Whatomate Dashboard"
-  />
-</Frame>
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<img src="/whatomate/images/01-dashboard.png" alt="Whatomate Dashboard" />
 
 ## Overview
 
@@ -16,7 +13,7 @@ The Dashboard provides a comprehensive view of your WhatsApp business operations
 
 ## Key Metrics
 
-<CardGroup cols={2}>
+<CardGrid>
   <Card title="Total Messages">
     Track the total number of messages sent and received across all your WhatsApp accounts.
   </Card>
@@ -29,7 +26,7 @@ The Dashboard provides a comprehensive view of your WhatsApp business operations
   <Card title="Chatbot Analytics">
     Analyze how your automated responses are performing.
   </Card>
-</CardGroup>
+</CardGrid>
 
 ## Features
 

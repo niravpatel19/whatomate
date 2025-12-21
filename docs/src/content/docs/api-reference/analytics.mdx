@@ -1,7 +1,9 @@
 ---
 title: Analytics
-description: "Access dashboard and messaging analytics"
+description: Access dashboard and messaging analytics
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -197,9 +199,9 @@ GET /api/analytics/chatbot
 | `avg_resolution_time` | Average time to resolve a conversation |
 | `completion_rate` | Percentage of started flows that were completed |
 
-<Tip>
+<Aside type="tip">
   Use analytics to identify popular topics and optimize your chatbot flows for better automation.
-</Tip>
+</Aside>
 
 ## Data Retention
 
@@ -208,6 +210,6 @@ Analytics data is retained for:
 - Daily: 1 year
 - Monthly: Indefinitely
 
-<Note>
+<Aside type="note">
   Historical data older than retention periods is aggregated and individual message-level details are not available.
-</Note>
+</Aside>

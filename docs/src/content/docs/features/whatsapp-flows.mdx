@@ -1,14 +1,11 @@
 ---
 title: WhatsApp Flows
-description: "Build native WhatsApp interactive experiences"
+description: Build native WhatsApp interactive experiences
 ---
 
-<Frame>
-  <img
-    src="/images/09-whatsapp-flows.png"
-    alt="WhatsApp Flows"
-  />
-</Frame>
+import { Card, CardGrid, Steps, Aside } from '@astrojs/starlight/components';
+
+![WhatsApp Flows](/whatomate/images/09-whatsapp-flows.png)
 
 ## Overview
 
@@ -16,12 +13,7 @@ WhatsApp Flows enable businesses to create rich, interactive experiences directl
 
 ## Flow Builder
 
-<Frame>
-  <img
-    src="/images/10-whatsapp-flow-builder.png"
-    alt="WhatsApp Flow Builder"
-  />
-</Frame>
+![WhatsApp Flow Builder](/whatomate/images/10-whatsapp-flow-builder.png)
 
 Whatomate provides a visual Flow Builder to design and manage your WhatsApp Flows:
 
@@ -37,42 +29,47 @@ Whatomate provides a visual Flow Builder to design and manage your WhatsApp Flow
 
 WhatsApp Flows support various UI components:
 
-<CardGroup cols={2}>
-  <Card title="Text Input" icon="keyboard">
+<CardGrid>
+  <Card title="Text Input" icon="pencil">
     Single-line and multi-line text fields
   </Card>
-  <Card title="Dropdown" icon="chevron-down">
+  <Card title="Dropdown" icon="down-caret">
     Selection menus with multiple options
   </Card>
-  <Card title="Date Picker" icon="calendar">
+  <Card title="Date Picker" icon="seti:clock">
     Native date selection component
   </Card>
-  <Card title="Radio Buttons" icon="circle-dot">
+  <Card title="Radio Buttons" icon="approve-check-circle">
     Single-select option groups
   </Card>
-  <Card title="Checkboxes" icon="square-check">
+  <Card title="Checkboxes" icon="approve-check">
     Multi-select options
   </Card>
-  <Card title="Buttons" icon="hand-pointer">
+  <Card title="Buttons" icon="right-arrow">
     Action buttons for navigation
   </Card>
-</CardGroup>
+</CardGrid>
 
 ## Flow Lifecycle
 
 <Steps>
-  <Step title="Create">
-    Design your flow using the visual builder or JSON editor.
-  </Step>
-  <Step title="Save to Meta">
-    Push your flow to Meta's WhatsApp Business API.
-  </Step>
-  <Step title="Test">
-    Test the flow in draft mode before publishing.
-  </Step>
-  <Step title="Publish">
-    Make the flow available for use in messages.
-  </Step>
+
+1. **Create**
+
+   Design your flow using the visual builder or JSON editor.
+
+2. **Save to Meta**
+
+   Push your flow to Meta's WhatsApp Business API.
+
+3. **Test**
+
+   Test the flow in draft mode before publishing.
+
+4. **Publish**
+
+   Make the flow available for use in messages.
+
 </Steps>
 
 ## Flow Status
@@ -113,10 +110,10 @@ POST /api/messages
 
 ## Best Practices
 
-<Tip>
+<Aside type="tip">
   Keep flows concise - users prefer shorter, focused experiences over lengthy multi-screen journeys.
-</Tip>
+</Aside>
 
-<Note>
+<Aside type="note">
   WhatsApp Flows require a business verification and may not be available in all regions.
-</Note>
+</Aside>

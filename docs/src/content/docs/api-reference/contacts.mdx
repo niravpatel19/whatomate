@@ -1,7 +1,9 @@
 ---
 title: Contacts
-description: "Manage contacts and contact information"
+description: Manage contacts and contact information
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -199,6 +201,6 @@ PUT /api/contacts/{id}/assign
 }
 ```
 
-<Tip>
+<Aside type="tip">
   Use the `metadata` field to store custom data like customer IDs, order numbers, or any business-specific information.
-</Tip>
+</Aside>

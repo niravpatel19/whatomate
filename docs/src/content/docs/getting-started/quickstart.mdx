@@ -1,0 +1,110 @@
+---
+title: Quickstart
+description: Get Whatomate up and running in minutes
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Get Whatomate up and running in minutes using Docker or manual installation.
+
+## Prerequisites
+
+- Docker and Docker Compose (for Docker installation)
+- Go 1.21+ (for manual installation)
+- Node.js 18+ (for frontend development)
+- PostgreSQL 14+
+- Redis 6+
+
+## Docker Installation (Recommended)
+
+<Steps>
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/shridarpatil/whatomate.git
+   cd whatomate
+   ```
+
+2. **Configure environment**
+
+   ```bash
+   cp config.example.toml config.toml
+   # Edit config.toml with your settings
+   ```
+
+3. **Start with Docker Compose**
+
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Access the application**
+
+   Open [http://localhost:8080](http://localhost:8080) in your browser.
+
+</Steps>
+
+## Manual Installation
+
+<Steps>
+
+1. **Clone and setup backend**
+
+   ```bash
+   git clone https://github.com/shridarpatil/whatomate.git
+   cd whatomate
+   go mod download
+   ```
+
+2. **Configure the application**
+
+   ```bash
+   cp config.example.toml config.toml
+   # Edit config.toml with your database and Redis settings
+   ```
+
+3. **Run database migrations**
+
+   ```bash
+   go run cmd/server/main.go -migrate
+   ```
+
+4. **Start the backend server**
+
+   ```bash
+   go run cmd/server/main.go
+   ```
+
+5. **Setup frontend (development)**
+
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+</Steps>
+
+## WhatsApp Configuration
+
+To connect your WhatsApp Business account:
+
+<Steps>
+
+1. Create a Meta Business account at [business.facebook.com](https://business.facebook.com)
+2. Set up a WhatsApp Business API account
+3. Generate an access token and note your Phone Number ID
+4. Add these credentials in Whatomate's Account Settings
+
+</Steps>
+
+<Aside type="tip">
+  For development, you can use Meta's test phone numbers to send messages without affecting your production account.
+</Aside>
+
+## Next Steps
+
+- [Configuration Reference](/whatomate/getting-started/configuration) - Detailed configuration options
+- [Dashboard Overview](/whatomate/features/dashboard) - Explore the dashboard
+- [API Reference](/whatomate/api-reference/overview) - Integrate via REST API

@@ -1,7 +1,9 @@
 ---
 title: Webhooks
-description: "Receive real-time updates from WhatsApp"
+description: Receive real-time updates from WhatsApp
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -171,9 +173,9 @@ Always verify webhook requests are from Meta:
 
 Whatomate handles this verification automatically.
 
-<Warning>
+<Aside type="caution">
   Keep your webhook verify token and app secret secure. Never expose them in client-side code.
-</Warning>
+</Aside>
 
 ### Rate Limiting
 
@@ -182,6 +184,6 @@ Meta may send webhooks at high volumes during campaigns. Whatomate:
 - Queues events in Redis for processing
 - Handles duplicate events gracefully
 
-<Tip>
+<Aside type="tip">
   Use the WebSocket connection for real-time UI updates instead of polling the API.
-</Tip>
+</Aside>

@@ -1,7 +1,9 @@
 ---
 title: Messages
-description: "Send and receive WhatsApp messages"
+description: Send and receive WhatsApp messages
 ---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
 
 ## Overview
 
@@ -209,35 +211,35 @@ Messages go through the following status flow:
 | `read` | Message read by recipient |
 | `failed` | Message failed to send |
 
-<Note>
+<Aside type="note">
   Status updates are delivered via webhooks in real-time. Configure your webhook endpoint to receive these updates.
-</Note>
+</Aside>
 
 ## Message Types
 
-<CardGroup cols={2}>
-  <Card title="Text" icon="font">
+<CardGrid>
+  <Card title="Text" icon="pencil">
     Plain text messages
   </Card>
-  <Card title="Image" icon="image">
+  <Card title="Image" icon="sun">
     JPEG, PNG images with optional caption
   </Card>
-  <Card title="Video" icon="video">
+  <Card title="Video" icon="youtube">
     MP4 videos with optional caption
   </Card>
-  <Card title="Document" icon="file">
+  <Card title="Document" icon="document">
     PDF, Word, Excel, and other documents
   </Card>
-  <Card title="Audio" icon="volume-high">
+  <Card title="Audio" icon="translate">
     Voice messages and audio files
   </Card>
-  <Card title="Template" icon="file-lines">
+  <Card title="Template" icon="document">
     Pre-approved message templates
   </Card>
-  <Card title="Interactive" icon="hand-pointer">
+  <Card title="Interactive" icon="right-arrow">
     Buttons, lists, and reply buttons
   </Card>
-  <Card title="Flow" icon="diagram-project">
+  <Card title="Flow" icon="puzzle">
     WhatsApp Flows
   </Card>
-</CardGroup>
+</CardGrid>
