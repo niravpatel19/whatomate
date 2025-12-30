@@ -142,15 +142,17 @@ func (a *App) ListContacts(r *fastglue.Request) error {
 		}
 
 		phoneNumber := c.PhoneNumber
+		profileName := c.ProfileName
 		if shouldMask {
 			phoneNumber = MaskPhoneNumber(phoneNumber)
+			profileName = MaskIfPhoneNumber(profileName)
 		}
 
 		response[i] = ContactResponse{
 			ID:                 c.ID,
 			PhoneNumber:        phoneNumber,
-			Name:               c.ProfileName, // Use profile name as name
-			ProfileName:        c.ProfileName,
+			Name:               profileName,
+			ProfileName:        profileName,
 			Status:             "active",
 			Tags:               tags,
 			CustomFields:       c.Metadata,
@@ -212,15 +214,18 @@ func (a *App) GetContact(r *fastglue.Request) error {
 	}
 
 	phoneNumber := contact.PhoneNumber
-	if a.ShouldMaskPhoneNumbers(orgID) {
+	profileName := contact.ProfileName
+	shouldMask := a.ShouldMaskPhoneNumbers(orgID)
+	if shouldMask {
 		phoneNumber = MaskPhoneNumber(phoneNumber)
+		profileName = MaskIfPhoneNumber(profileName)
 	}
 
 	response := ContactResponse{
 		ID:                 contact.ID,
 		PhoneNumber:        phoneNumber,
-		Name:               contact.ProfileName,
-		ProfileName:        contact.ProfileName,
+		Name:               profileName,
+		ProfileName:        profileName,
 		Status:             "active",
 		Tags:               tags,
 		CustomFields:       contact.Metadata,

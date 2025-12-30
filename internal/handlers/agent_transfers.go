@@ -89,13 +89,21 @@ func (a *App) ListAgentTransfers(r *fastglue.Request) error {
 
 	a.Log.Info("ListAgentTransfers", "org_id", orgID, "role", role, "user_id", userID, "transfers_count", len(transfers), "queue_count", queueCount)
 
+	// Check if phone masking is enabled
+	shouldMask := a.ShouldMaskPhoneNumbers(orgID)
+
 	// Build response
 	response := make([]AgentTransferResponse, len(transfers))
 	for i, t := range transfers {
+		phoneNumber := t.PhoneNumber
+		if shouldMask {
+			phoneNumber = MaskPhoneNumber(phoneNumber)
+		}
+
 		resp := AgentTransferResponse{
 			ID:              t.ID.String(),
 			ContactID:       t.ContactID.String(),
-			PhoneNumber:     t.PhoneNumber,
+			PhoneNumber:     phoneNumber,
 			WhatsAppAccount: t.WhatsAppAccount,
 			Status:          t.Status,
 			Source:          t.Source,
@@ -104,7 +112,11 @@ func (a *App) ListAgentTransfers(r *fastglue.Request) error {
 		}
 
 		if t.Contact != nil {
-			resp.ContactName = t.Contact.ProfileName
+			contactName := t.Contact.ProfileName
+			if shouldMask {
+				contactName = MaskIfPhoneNumber(contactName)
+			}
+			resp.ContactName = contactName
 		}
 
 		if t.AgentID != nil {
@@ -283,11 +295,20 @@ func (a *App) CreateAgentTransfer(r *fastglue.Request) error {
 	// Load relations for response
 	a.DB.Preload("Agent").Preload("TransferredByUser").First(&transfer, transfer.ID)
 
+	// Apply phone masking if enabled
+	shouldMask := a.ShouldMaskPhoneNumbers(orgID)
+	phoneNumber := transfer.PhoneNumber
+	contactName := contact.ProfileName
+	if shouldMask {
+		phoneNumber = MaskPhoneNumber(phoneNumber)
+		contactName = MaskIfPhoneNumber(contactName)
+	}
+
 	resp := AgentTransferResponse{
 		ID:              transfer.ID.String(),
 		ContactID:       transfer.ContactID.String(),
-		ContactName:     contact.ProfileName,
-		PhoneNumber:     transfer.PhoneNumber,
+		ContactName:     contactName,
+		PhoneNumber:     phoneNumber,
 		WhatsAppAccount: transfer.WhatsAppAccount,
 		Status:          transfer.Status,
 		Source:          transfer.Source,
@@ -549,10 +570,17 @@ func (a *App) PickNextTransfer(r *fastglue.Request) error {
 	// Broadcast WebSocket notification
 	a.broadcastTransferAssigned(&transfer)
 
+	// Apply phone masking if enabled
+	shouldMask := a.ShouldMaskPhoneNumbers(orgID)
+	phoneNumber := transfer.PhoneNumber
+	if shouldMask {
+		phoneNumber = MaskPhoneNumber(phoneNumber)
+	}
+
 	resp := AgentTransferResponse{
 		ID:              transfer.ID.String(),
 		ContactID:       transfer.ContactID.String(),
-		PhoneNumber:     transfer.PhoneNumber,
+		PhoneNumber:     phoneNumber,
 		WhatsAppAccount: transfer.WhatsAppAccount,
 		Status:          transfer.Status,
 		Source:          transfer.Source,
@@ -561,7 +589,11 @@ func (a *App) PickNextTransfer(r *fastglue.Request) error {
 	}
 
 	if transfer.Contact != nil {
-		resp.ContactName = transfer.Contact.ProfileName
+		contactName := transfer.Contact.ProfileName
+		if shouldMask {
+			contactName = MaskIfPhoneNumber(contactName)
+		}
+		resp.ContactName = contactName
 	}
 
 	agentIDStr := userID.String()

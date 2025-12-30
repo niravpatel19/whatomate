@@ -114,6 +114,30 @@ func MaskPhoneNumber(phone string) string {
 	return masked + phone[len(phone)-4:]
 }
 
+// LooksLikePhoneNumber checks if a string looks like a phone number
+// (mostly digits, optionally with common phone formatting characters)
+func LooksLikePhoneNumber(s string) bool {
+	if len(s) < 7 {
+		return false
+	}
+	digitCount := 0
+	for _, c := range s {
+		if c >= '0' && c <= '9' {
+			digitCount++
+		}
+	}
+	// If at least 7 digits and more than 70% of the string is digits
+	return digitCount >= 7 && float64(digitCount)/float64(len(s)) > 0.7
+}
+
+// MaskIfPhoneNumber masks a string if it looks like a phone number
+func MaskIfPhoneNumber(s string) string {
+	if LooksLikePhoneNumber(s) {
+		return MaskPhoneNumber(s)
+	}
+	return s
+}
+
 // ShouldMaskPhoneNumbers checks if phone masking is enabled for the organization
 func (a *App) ShouldMaskPhoneNumbers(orgID interface{}) bool {
 	var org models.Organization
