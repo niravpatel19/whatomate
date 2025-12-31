@@ -70,6 +70,23 @@ type IncomingTextMessage struct {
 		MessageID string `json:"message_id"` // WhatsApp message ID being reacted to
 		Emoji     string `json:"emoji"`      // The emoji reaction (empty string = remove reaction)
 	} `json:"reaction,omitempty"`
+	Location *struct {
+		Latitude  float64 `json:"latitude"`
+		Longitude float64 `json:"longitude"`
+		Name      string  `json:"name,omitempty"`
+		Address   string  `json:"address,omitempty"`
+	} `json:"location,omitempty"`
+	Contacts []struct {
+		Name struct {
+			FormattedName string `json:"formatted_name"`
+			FirstName     string `json:"first_name,omitempty"`
+			LastName      string `json:"last_name,omitempty"`
+		} `json:"name"`
+		Phones []struct {
+			Phone string `json:"phone"`
+			Type  string `json:"type,omitempty"`
+		} `json:"phones,omitempty"`
+	} `json:"contacts,omitempty"`
 }
 
 // processIncomingMessageFull processes incoming WhatsApp messages with chatbot logic
@@ -197,6 +214,40 @@ func (a *App) processIncomingMessageFull(phoneNumberID string, msg IncomingTextM
 			a.Log.Error("Failed to download audio", "error", err, "media_id", msg.Audio.ID)
 		} else {
 			mediaInfo.MediaURL = localPath
+		}
+	} else if msg.Type == "location" && msg.Location != nil {
+		// Handle location message - store as JSON in content
+		locationData := map[string]any{
+			"latitude":  msg.Location.Latitude,
+			"longitude": msg.Location.Longitude,
+		}
+		if msg.Location.Name != "" {
+			locationData["name"] = msg.Location.Name
+		}
+		if msg.Location.Address != "" {
+			locationData["address"] = msg.Location.Address
+		}
+		if jsonBytes, err := json.Marshal(locationData); err == nil {
+			messageText = string(jsonBytes)
+		}
+	} else if msg.Type == "contacts" && len(msg.Contacts) > 0 {
+		// Handle contacts message - store as JSON in content
+		contactsData := make([]map[string]any, 0, len(msg.Contacts))
+		for _, c := range msg.Contacts {
+			contact := map[string]any{
+				"name": c.Name.FormattedName,
+			}
+			if len(c.Phones) > 0 {
+				phones := make([]string, 0, len(c.Phones))
+				for _, p := range c.Phones {
+					phones = append(phones, p.Phone)
+				}
+				contact["phones"] = phones
+			}
+			contactsData = append(contactsData, contact)
+		}
+		if jsonBytes, err := json.Marshal(contactsData); err == nil {
+			messageText = string(jsonBytes)
 		}
 	}
 

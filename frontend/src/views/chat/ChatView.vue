@@ -64,7 +64,9 @@ import {
   Play,
   Reply,
   X,
-  SmilePlus
+  SmilePlus,
+  MapPin,
+  ExternalLink
 } from 'lucide-vue-next'
 import { formatTime, getInitials, truncate } from '@/lib/utils'
 import { useColorMode } from '@/composables/useColorMode'
@@ -517,7 +519,57 @@ function getMessageContent(message: Message): string {
   if (message.message_type === 'template') {
     return '[Template Message]'
   }
+  if (message.message_type === 'location') {
+    return '' // Location is displayed as a map/card, not text
+  }
+  if (message.message_type === 'contacts') {
+    return '' // Contacts are displayed as a card, not text
+  }
   return '[Message]'
+}
+
+interface LocationData {
+  latitude: number
+  longitude: number
+  name?: string
+  address?: string
+}
+
+interface ContactData {
+  name: string
+  phones?: string[]
+}
+
+function getLocationData(message: Message): LocationData | null {
+  if (message.message_type !== 'location') return null
+  try {
+    // Content is stored as JSON string in body
+    const body = message.content?.body || message.content
+    if (typeof body === 'string') {
+      return JSON.parse(body)
+    }
+    return body as LocationData
+  } catch {
+    return null
+  }
+}
+
+function getContactsData(message: Message): ContactData[] {
+  if (message.message_type !== 'contacts') return []
+  try {
+    // Content is stored as JSON string in body
+    const body = message.content?.body || message.content
+    if (typeof body === 'string') {
+      return JSON.parse(body)
+    }
+    return body as ContactData[]
+  } catch {
+    return []
+  }
+}
+
+function getGoogleMapsUrl(location: LocationData): string {
+  return `https://www.google.com/maps?q=${location.latitude},${location.longitude}`
 }
 
 function getInteractiveButtons(message: Message): Array<{ id: string; title: string }> {
@@ -777,7 +829,7 @@ async function sendMediaMessage() {
               </div>
               <div class="flex items-center justify-between">
                 <p class="text-xs text-muted-foreground truncate">
-                  {{ contact.profile_name || contact.phone_number }}
+                  {{ contact.phone_number }}
                 </p>
                 <Badge v-if="contact.unread_count > 0" class="ml-2 h-5 text-[10px]">
                   {{ contact.unread_count }}
@@ -994,6 +1046,51 @@ async function sendMediaMessage() {
                   <div v-else class="flex items-center gap-2 px-3 py-2 bg-background/50 rounded-lg">
                     <FileText class="h-5 w-5 text-muted-foreground" />
                     <span class="text-sm text-muted-foreground">[Document]</span>
+                  </div>
+                </div>
+                <!-- Location message -->
+                <div v-else-if="message.message_type === 'location' && getLocationData(message)" class="mb-2">
+                  <a
+                    :href="getGoogleMapsUrl(getLocationData(message)!)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-3 px-3 py-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors"
+                  >
+                    <div class="h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+                      <MapPin class="h-5 w-5 text-red-500" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p v-if="getLocationData(message)?.name" class="text-sm font-medium truncate">
+                        {{ getLocationData(message)?.name }}
+                      </p>
+                      <p v-else class="text-sm font-medium">Location</p>
+                      <p v-if="getLocationData(message)?.address" class="text-xs text-muted-foreground truncate">
+                        {{ getLocationData(message)?.address }}
+                      </p>
+                      <p class="text-xs text-muted-foreground">
+                        {{ getLocationData(message)?.latitude.toFixed(6) }}, {{ getLocationData(message)?.longitude.toFixed(6) }}
+                      </p>
+                    </div>
+                    <ExternalLink class="h-4 w-4 text-muted-foreground shrink-0" />
+                  </a>
+                </div>
+                <!-- Contacts message -->
+                <div v-else-if="message.message_type === 'contacts' && getContactsData(message).length > 0" class="mb-2 space-y-2">
+                  <div
+                    v-for="(contact, idx) in getContactsData(message)"
+                    :key="idx"
+                    class="flex items-center gap-3 px-3 py-2 bg-background/50 rounded-lg"
+                  >
+                    <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <User class="h-5 w-5 text-primary" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium truncate">{{ contact.name }}</p>
+                      <div v-if="contact.phones?.length" class="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Phone class="h-3 w-3" />
+                        <span class="truncate">{{ contact.phones.join(', ') }}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <!-- Text content (for text messages or captions) -->

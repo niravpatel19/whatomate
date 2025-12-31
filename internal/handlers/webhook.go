@@ -159,6 +159,17 @@ type WebhookPayload struct {
 						Name      string  `json:"name,omitempty"`
 						Address   string  `json:"address,omitempty"`
 					} `json:"location,omitempty"`
+					Contacts []struct {
+						Name struct {
+							FormattedName string `json:"formatted_name"`
+							FirstName     string `json:"first_name,omitempty"`
+							LastName      string `json:"last_name,omitempty"`
+						} `json:"name"`
+						Phones []struct {
+							Phone string `json:"phone"`
+							Type  string `json:"type,omitempty"`
+						} `json:"phones,omitempty"`
+					} `json:"contacts,omitempty"`
 					Context *struct {
 						From string `json:"from"`
 						ID   string `json:"id"`
