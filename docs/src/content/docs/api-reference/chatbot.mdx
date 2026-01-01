@@ -255,52 +255,126 @@ POST /api/chatbot/flows
 {
   "name": "Feedback Collection",
   "trigger_keywords": ["feedback", "review"],
+  "initial_message": "Hi! I'd like to collect your feedback.",
+  "completion_message": "Thank you for your feedback!",
+  "enabled": true,
   "steps": [
     {
-      "id": "welcome",
-      "type": "message",
-      "content": "We'd love to hear your feedback!",
-      "next": "rating"
+      "step_name": "rating",
+      "step_order": 1,
+      "message": "How would you rate your experience?",
+      "message_type": "buttons",
+      "input_type": "select",
+      "buttons": [
+        {"id": "excellent", "title": "Excellent"},
+        {"id": "good", "title": "Good"},
+        {"id": "poor", "title": "Poor"}
+      ],
+      "store_as": "rating"
     },
     {
-      "id": "rating",
-      "type": "input",
-      "input_type": "buttons",
-      "content": "How would you rate your experience?",
-      "options": ["Excellent", "Good", "Average", "Poor"],
-      "variable": "rating",
-      "next": "comment"
-    },
-    {
-      "id": "comment",
-      "type": "input",
+      "step_name": "comment",
+      "step_order": 2,
+      "message": "Any additional comments?",
+      "message_type": "text",
       "input_type": "text",
-      "content": "Any additional comments?",
-      "variable": "comment",
-      "next": "complete"
+      "store_as": "comment"
     },
     {
-      "id": "complete",
-      "type": "message",
-      "content": "Thank you for your feedback!"
+      "step_name": "transfer",
+      "step_order": 3,
+      "message": "Connecting you with our team...",
+      "message_type": "transfer",
+      "transfer_config": {
+        "team_id": "uuid",
+        "notes": "Rating: {{rating}}"
+      }
     }
   ]
 }
 ```
 
+### Step Message Types
+
+| Type | Description |
+|------|-------------|
+| `text` | Send a static text message |
+| `buttons` | Send message with interactive buttons |
+| `api_fetch` | Fetch message content from external API |
+| `whatsapp_flow` | Trigger a native WhatsApp Flow |
+| `transfer` | Transfer conversation to agent/team and end flow |
+
+### Transfer Step Configuration
+
+The `transfer` message type ends the flow and creates an agent transfer:
+
+```json
+{
+  "message_type": "transfer",
+  "message": "Connecting you with our support team...",
+  "transfer_config": {
+    "team_id": "uuid",
+    "notes": "From flow: {{variable_name}}"
+  }
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `team_id` | Target team UUID (omit for general queue) |
+| `notes` | Internal notes for agents (supports `{{variable}}` placeholders) |
+
 ## Agent Transfers
 
 ### List Transfers
 
-Get pending agent transfer requests.
+Get agent transfer requests.
 
 ```bash
 GET /api/chatbot/transfers
 ```
 
+### Query Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `status` | string | Filter by status: `active` or `resumed` |
+| `team_id` | string | Filter by team ID, or `general` for general queue |
+
+### Response
+
+```json
+{
+  "status": "success",
+  "data": {
+    "transfers": [
+      {
+        "id": "uuid",
+        "contact_id": "uuid",
+        "contact_name": "John Doe",
+        "phone_number": "1234567890",
+        "status": "active",
+        "source": "flow",
+        "agent_id": null,
+        "agent_name": null,
+        "team_id": "uuid",
+        "team_name": "Sales Team",
+        "notes": "Interested in enterprise plan",
+        "transferred_at": "2024-01-01T12:00:00Z"
+      }
+    ],
+    "general_queue_count": 3,
+    "team_queue_counts": {
+      "team-uuid-1": 5,
+      "team-uuid-2": 2
+    }
+  }
+}
+```
+
 ### Create Transfer
 
-Manually transfer a conversation to a human agent.
+Manually transfer a conversation to a human agent or team.
 
 ```bash
 POST /api/chatbot/transfers
@@ -311,7 +385,44 @@ POST /api/chatbot/transfers
 ```json
 {
   "contact_id": "uuid",
-  "reason": "Customer requested human support"
+  "team_id": "uuid",
+  "notes": "Customer requested human support"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `contact_id` | uuid | Yes | The contact to transfer |
+| `team_id` | uuid | No | Target team (omit for general queue) |
+| `notes` | string | No | Internal notes for agents |
+
+### Pick Next Transfer
+
+Pick the next unassigned transfer from the queue.
+
+```bash
+POST /api/chatbot/transfers/pickup
+```
+
+### Query Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `team_id` | string | Pick from specific team, or `general` for general queue only |
+
+### Assign Transfer
+
+Assign a transfer to a specific agent.
+
+```bash
+PUT /api/chatbot/transfers/{id}/assign
+```
+
+### Request Body
+
+```json
+{
+  "agent_id": "uuid"
 }
 ```
 

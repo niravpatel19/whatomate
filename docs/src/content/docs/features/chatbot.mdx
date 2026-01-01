@@ -229,22 +229,80 @@ Transfers can be initiated in three ways:
   </Card>
 </CardGrid>
 
+## Teams
+
+Teams allow you to organize agents into groups that handle specific types of inquiries (e.g., Sales, Support, Orders). Each team can have its own assignment strategy and queue.
+
+### Creating a Team
+
+Navigate to **Settings > Teams** to manage teams:
+
+<Steps>
+
+1. **Create Team**
+
+   Click "Create Team" and provide a name and optional description.
+
+2. **Choose Assignment Strategy**
+
+   Select how transfers should be assigned to team members:
+   - **Round Robin** - Distributes transfers evenly across available agents
+   - **Load Balanced** - Assigns to the agent with fewest active transfers
+   - **Manual** - Transfers go to team queue for agents to pick
+
+3. **Add Members**
+
+   Click "Manage Members" to add agents to the team. Each member can be assigned a role:
+   - **Manager** - Can manage team settings and members
+   - **Agent** - Can pick and handle transfers from the team queue
+
+</Steps>
+
+### Team-Based Routing in Flows
+
+Use the **Transfer to Agent/Team** step type in conversation flows to route chats to specific teams:
+
+<Steps>
+
+1. **Add Transfer Step**
+
+   In the flow builder, add a new step and select "Transfer to Agent/Team" as the message type.
+
+2. **Configure Transfer**
+
+   - **Transfer Message** - Optional message sent to the customer before transfer
+   - **Assign to Team** - Select the target team (or "General Queue" for no team)
+   - **Transfer Notes** - Internal notes for agents (supports variables like `{{order_id}}`)
+
+3. **Test the Flow**
+
+   The transfer step will end the flow and create a transfer to the selected team.
+
+</Steps>
+
+<Aside type="tip">
+  Use team-based routing to direct order inquiries to the Orders team, sales questions to the Sales team, and technical issues to the Support team.
+</Aside>
+
 ### Queue Management
 
 #### For Agents
 
 Agents see the **Transfers** view in their sidebar with:
 - **My Transfers** - Conversations currently assigned to them
-- **Pick Next** button - Claim the next available transfer from the queue (if enabled)
+- **Queue** tab - Unassigned transfers from their teams and the general queue
+- **Pick Next** button - Claim the next available transfer (if enabled)
+- **Team Filter** - Filter queue by specific team
 
 <Aside type="note">
-  When picking from the queue, agents don't see contact details until the transfer is assigned to them. This ensures fair FIFO (first-in-first-out) distribution.
+  Agents only see transfers from teams they belong to. When picking from the queue, agents don't see contact details until the transfer is assigned to them. This ensures fair FIFO (first-in-first-out) distribution.
 </Aside>
 
 #### For Admins/Managers
 
 Admins and managers have full visibility into the queue and can:
-- View all unassigned transfers with contact details
+- View all unassigned transfers across all teams
+- Filter by team to see specific queues
 - Assign transfers to specific agents
 - View transfer history
 - Resume transfers (return to chatbot)
@@ -263,11 +321,13 @@ Configure queue behavior in **Chatbot > Settings**:
 
 1. **Transfer Created**
 
-   A transfer is created via manual action, flow step, or keyword rule. The contact is assigned to the queue or an existing agent.
+   A transfer is created via manual action, flow step, or keyword rule. The contact is assigned to a team queue, general queue, or an existing agent.
 
-2. **Agent Assignment**
+2. **Team Assignment**
 
-   Either the agent picks from the queue, or an admin assigns the transfer.
+   Based on the team's assignment strategy:
+   - **Round Robin/Load Balanced** - Automatically assigned to an available team member
+   - **Manual** - Goes to team queue for agents to pick
 
 3. **Agent Handling**
 
