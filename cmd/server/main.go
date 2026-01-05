@@ -105,6 +105,11 @@ func main() {
 		Queue:    jobQueue,
 	}
 
+	// Start campaign stats subscriber for real-time WebSocket updates from worker
+	if err := app.StartCampaignStatsSubscriber(); err != nil {
+		lo.Error("Failed to start campaign stats subscriber", "error", err)
+	}
+
 	// Setup middleware
 	g.Before(middleware.RequestLogger(lo))
 	g.Before(middleware.CORS())
@@ -169,6 +174,11 @@ func main() {
 	<-quit
 
 	lo.Info("Shutting down...")
+
+	// Stop campaign stats subscriber
+	lo.Info("Stopping campaign stats subscriber...")
+	app.StopCampaignStatsSubscriber()
+	lo.Info("Campaign stats subscriber stopped")
 
 	// Stop SLA processor
 	lo.Info("Stopping SLA processor...")

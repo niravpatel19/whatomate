@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"errors"
 
 	"github.com/google/uuid"
@@ -16,13 +17,14 @@ import (
 
 // App holds all dependencies for handlers
 type App struct {
-	Config   *config.Config
-	DB       *gorm.DB
-	Redis    *redis.Client
-	Log      logf.Logger
-	WhatsApp *whatsapp.Client
-	WSHub    *websocket.Hub
-	Queue    queue.Queue
+	Config            *config.Config
+	DB                *gorm.DB
+	Redis             *redis.Client
+	Log               logf.Logger
+	WhatsApp          *whatsapp.Client
+	WSHub             *websocket.Hub
+	Queue             queue.Queue
+	CampaignSubCancel context.CancelFunc
 }
 
 // getOrgIDFromContext extracts organization ID from request context (set by auth middleware)
@@ -66,4 +68,54 @@ func (a *App) ReadyCheck(r *fastglue.Request) error {
 	return r.SendEnvelope(map[string]string{
 		"status": "ready",
 	})
+}
+
+// StartCampaignStatsSubscriber starts listening for campaign stats updates from Redis pub/sub
+// and broadcasts them via WebSocket
+func (a *App) StartCampaignStatsSubscriber() error {
+	if a.WSHub == nil {
+		a.Log.Warn("WebSocket hub not initialized, skipping campaign stats subscriber")
+		return nil
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	a.CampaignSubCancel = cancel
+
+	subscriber := queue.NewSubscriber(a.Redis, a.Log)
+
+	err := subscriber.SubscribeCampaignStats(ctx, func(update *queue.CampaignStatsUpdate) {
+		a.Log.Debug("Received campaign stats update from Redis",
+			"campaign_id", update.CampaignID,
+			"status", update.Status,
+			"sent", update.SentCount,
+		)
+
+		// Broadcast to organization via WebSocket
+		a.WSHub.BroadcastToOrg(update.OrganizationID, websocket.WSMessage{
+			Type: websocket.TypeCampaignStatsUpdate,
+			Payload: map[string]interface{}{
+				"campaign_id":     update.CampaignID,
+				"status":          update.Status,
+				"sent_count":      update.SentCount,
+				"delivered_count": update.DeliveredCount,
+				"read_count":      update.ReadCount,
+				"failed_count":    update.FailedCount,
+			},
+		})
+	})
+
+	if err != nil {
+		cancel()
+		return err
+	}
+
+	a.Log.Info("Campaign stats subscriber started")
+	return nil
+}
+
+// StopCampaignStatsSubscriber stops the campaign stats subscriber
+func (a *App) StopCampaignStatsSubscriber() {
+	if a.CampaignSubCancel != nil {
+		a.CampaignSubCancel()
+	}
 }

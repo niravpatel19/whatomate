@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -742,6 +743,19 @@ func (a *App) processCampaign(campaignID uuid.UUID) {
 		}
 		if campaign.Template != nil {
 			message.TemplateName = campaign.Template.Name
+			// Store template body with substituted values for display in chat
+			content := campaign.Template.BodyContent
+			// Replace placeholders {{1}}, {{2}}, etc. with actual values
+			if recipient.TemplateParams != nil {
+				for i := 1; i <= 10; i++ {
+					key := fmt.Sprintf("%d", i)
+					if val, ok := recipient.TemplateParams[key]; ok {
+						placeholder := fmt.Sprintf("{{%d}}", i)
+						content = strings.ReplaceAll(content, placeholder, fmt.Sprintf("%v", val))
+					}
+				}
+			}
+			message.Content = content
 		}
 
 		if err != nil {
@@ -759,6 +773,16 @@ func (a *App) processCampaign(campaignID uuid.UUID) {
 		if err := a.DB.Create(&message).Error; err != nil {
 			a.Log.Error("Failed to save campaign message", "error", err, "recipient", recipient.PhoneNumber)
 		}
+
+		// Update BulkMessageRecipient status to track which recipients have been processed
+		recipientUpdate := map[string]interface{}{
+			"status":               message.Status,
+			"whats_app_message_id": waMessageID,
+		}
+		if message.Status == "failed" {
+			recipientUpdate["error_message"] = message.ErrorMessage
+		}
+		a.DB.Model(&recipient).Updates(recipientUpdate)
 
 		// Update campaign counts
 		a.DB.Model(&campaign).Updates(map[string]interface{}{

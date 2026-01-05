@@ -594,7 +594,8 @@ function getMessageContent(message: Message): string {
     return message.content?.body || ''
   }
   if (message.message_type === 'template') {
-    return '[Template Message]'
+    // Show actual content if available (campaign messages), otherwise fallback
+    return message.content?.body || '[Template Message]'
   }
   if (message.message_type === 'location') {
     return '' // Location is displayed as a map/card, not text
