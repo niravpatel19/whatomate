@@ -257,8 +257,7 @@ function getStatusBadgeClass(status: string) {
   }
 }
 
-const basePath = ((window as any).__BASE_PATH__ ?? '').replace(/\/$/, '')
-const webhookUrl = window.location.origin + basePath + '/api/webhook'
+const webhookUrl = 'https://wp-api.xobito.com/api/webhook'
 </script>
 
 <template>

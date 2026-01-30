@@ -1,86 +1,83 @@
 services:
-  api:
+  whatomate-api:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+    container_name: whatomate-api
     ports:
-      - "8080:8080"
+      - "5701:8080"
     environment:
       - WHATOMATE_APP_NAME=Whatomate
-      - WHATOMATE_APP_ENVIRONMENT=development
-      - WHATOMATE_APP_DEBUG=true
+      - WHATOMATE_APP_ENVIRONMENT=production
+      - WHATOMATE_APP_DEBUG=false
       - WHATOMATE_SERVER_HOST=0.0.0.0
       - WHATOMATE_SERVER_PORT=8080
-      - WHATOMATE_DATABASE_HOST=db
+      - WHATOMATE_DATABASE_HOST=whatomate-db
       - WHATOMATE_DATABASE_PORT=5432
       - WHATOMATE_DATABASE_USER=whatomate
       - WHATOMATE_DATABASE_PASSWORD=sswhatomate123
       - WHATOMATE_DATABASE_NAME=whatomate
       - WHATOMATE_DATABASE_SSL_MODE=disable
-      - WHATOMATE_REDIS_HOST=redis
+      - WHATOMATE_REDIS_HOST=whatomate-redis
       - WHATOMATE_REDIS_PORT=6379
       - WHATOMATE_JWT_SECRET=${JWT_SECRET:-sswhatomate123}
+      - WHATOMATE_JWT_ACCESS_EXPIRY_MINS=480
       - WHATOMATE_WHATSAPP_WEBHOOK_VERIFY_TOKEN=${WEBHOOK_VERIFY_TOKEN:-SzTN4JFPwbf7}
     depends_on:
-      db:
+      whatomate-db:
         condition: service_healthy
-      redis:
+      whatomate-redis:
         condition: service_healthy
     volumes:
-      - uploads:/app/uploads
-    networks:
-      - whatomate
+      - whatomate_uploads:/app/uploads
     restart: unless-stopped
 
-  worker:
+  whatomate-worker:
     build:
       context: ..
       dockerfile: docker/Dockerfile.worker
+    container_name: whatomate-worker
     environment:
       - WHATOMATE_APP_NAME=Whatomate
-      - WHATOMATE_APP_ENVIRONMENT=development
-      - WHATOMATE_APP_DEBUG=true
-      - WHATOMATE_DATABASE_HOST=db
+      - WHATOMATE_APP_ENVIRONMENT=production
+      - WHATOMATE_APP_DEBUG=false
+      - WHATOMATE_DATABASE_HOST=whatomate-db
       - WHATOMATE_DATABASE_PORT=5432
       - WHATOMATE_DATABASE_USER=whatomate
       - WHATOMATE_DATABASE_PASSWORD=sswhatomate123
       - WHATOMATE_DATABASE_NAME=whatomate
       - WHATOMATE_DATABASE_SSL_MODE=disable
-      - WHATOMATE_REDIS_HOST=redis
+      - WHATOMATE_REDIS_HOST=whatomate-redis
       - WHATOMATE_REDIS_PORT=6379
     depends_on:
-      db:
+      whatomate-db:
         condition: service_healthy
-      redis:
+      whatomate-redis:
         condition: service_healthy
-    networks:
-      - whatomate
     restart: unless-stopped
 
-  frontend:
+  whatomate-frontend:
     build:
       context: ../frontend
       dockerfile: Dockerfile
+    container_name: whatomate-frontend
     ports:
-      - "3000:80"
+      - "5702:80"
     depends_on:
-      - api
-    networks:
-      - whatomate
+      - whatomate-api
     restart: unless-stopped
 
-  db:
+  whatomate-db:
     image: postgres:15-alpine
+    container_name: whatomate-db
     environment:
       - POSTGRES_USER=whatomate
       - POSTGRES_PASSWORD=whatomate123
       - POSTGRES_DB=whatomate
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - whatomate_postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
-    networks:
-      - whatomate
+      - "5703:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U whatomate"]
       interval: 10s
@@ -88,15 +85,14 @@ services:
       retries: 5
     restart: unless-stopped
 
-  redis:
+  whatomate-redis:
     image: redis:7-alpine
+    container_name: whatomate-redis
     command: redis-server --appendonly yes
     volumes:
-      - redis_data:/data
+      - whatomate_redis_data:/data
     ports:
-      - "6380:6379"
-    networks:
-      - whatomate
+      - "5704:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -104,26 +100,7 @@ services:
       retries: 5
     restart: unless-stopped
 
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - api
-      - frontend
-    networks:
-      - whatomate
-    restart: unless-stopped
-
 volumes:
-  postgres_data:
-  redis_data:
-  uploads:
-
-networks:
-  whatomate:
-    driver: bridge
+  whatomate_postgres_data:
+  whatomate_redis_data:
+  whatomate_uploads:

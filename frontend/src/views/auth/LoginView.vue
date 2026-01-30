@@ -97,7 +97,7 @@ const initiateSSO = (provider: string) => {
             <MessageSquare class="h-7 w-7 text-primary-foreground" />
           </div>
         </div>
-        <CardTitle class="text-2xl font-bold">Welcome to Whatomate</CardTitle>
+        <CardTitle class="text-2xl font-bold">Welcome to XOBITO</CardTitle>
         <CardDescription>
           Enter your credentials to access your account
         </CardDescription>

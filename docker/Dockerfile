@@ -1,4 +1,16 @@
-# Build stage
+# Frontend build stage
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /app/frontend
+
+# Copy frontend files
+COPY frontend/package*.json ./
+RUN npm ci
+
+COPY frontend/ ./
+RUN npm run build
+
+# Backend build stage
 FROM golang:1.24.5-alpine AS builder
 
 WORKDIR /app
@@ -13,7 +25,10 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build the binary
+# Copy built frontend from frontend-builder to the correct location
+COPY --from=frontend-builder /app/frontend/dist ./internal/frontend/dist
+
+# Build the binary (frontend will be embedded)
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o whatomate ./cmd/server
 
 # Final stage
